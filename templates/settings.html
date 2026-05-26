@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings — Crime Intelligence Unit</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- ========== NAVBAR ========== -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <img src="{{ url_for('static', filename='ap_police_logo.png') }}" alt="AP Police" class="nav-logo">
+                <div class="nav-brand-text">
+                    <span class="nav-brand-title">Crime Intelligence Unit</span>
+                    <span class="nav-brand-sub">Andhra Pradesh Police Department</span>
+                </div>
+            </a>
+            <div class="nav-menu">
+                <a href="/" class="nav-link">Home</a>
+                <div class="nav-divider"></div>
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/reports" class="nav-link">Reports</a>
+                <a href="/digest" class="nav-link">Offline Digest</a>
+                <div class="nav-divider"></div>
+                <a href="/settings" class="nav-link active">Settings</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== PAGE BANNER ========== -->
+    <div class="page-banner">
+        <h1>Settings</h1>
+        <div class="gold-line"></div>
+        <p>Configure scan defaults for new intelligence reports</p>
+    </div>
+
+    <div class="container">
+
+        {% if saved %}
+        <div class="alert alert-success">✓ System parameters updated and saved successfully.</div>
+        {% endif %}
+        {% if error %}
+        <div class="alert alert-error">{{ error }}</div>
+        {% endif %}
+
+        <form action="/settings" method="post">
+
+            <!-- ===== SCAN PARAMETERS ===== -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Scan Parameters</span>
+                    <span style="font-size:0.78rem; color:var(--text-secondary); letter-spacing:1px;">REQUIRED FOR
+                        INTELLIGENCE SCAN</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="default_district">Target Districts *</label>
+                        <input type="text" id="default_district" name="default_district"
+                            value="{{ settings.default_district }}" placeholder="e.g. Guntur, Vijayawada, Nellore"
+                            required>
+                        <span class="help-text">Comma-separated list of districts to monitor.</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="default_state">Primary State</label>
+                        <input type="text" id="default_state" name="default_state" value="{{ settings.default_state }}"
+                            placeholder="e.g. Andhra Pradesh">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="start_date">Start Date</label>
+                        <input type="date" id="start_date" name="start_date"
+                            value="{{ settings.start_date if settings.start_date else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="end_date">End Date</label>
+                        <input type="date" id="end_date" name="end_date"
+                            value="{{ settings.end_date if settings.end_date else '' }}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Sources</span>
+                </div>
+                <div class="source-grid">
+                    <div class="source-card source-card-active">
+                        <h3>GNews RSS</h3>
+                        <p>Always on for online monitoring. Covers Google News indexed publishers without needing an API
+                            key.</p>
+                        <span class="meta-pill">Enabled by default</span>
+                    </div>
+
+                    <div class="source-card {% if settings.use_newsapi %}source-card-active{% endif %}">
+                        <div class="checkbox-group" style="margin-bottom:1rem;">
+                            <input type="checkbox" id="use_newsapi" name="use_newsapi" {% if settings.use_newsapi
+                                %}checked{% endif %}>
+                            <label for="use_newsapi">Enable NewsAPI coverage</label>
+                        </div>
+                        <p>Add NewsAPI as a secondary online source so the scan can pull extra coverage alongside
+                            GNews.</p>
+                        <span class="meta-pill">Optional source</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">API Keys</span>
+                    <span style="font-size:0.78rem; color:var(--text-secondary);">STORED LOCALLY</span>
+                </div>
+
+                <div class="form-group api-key-field">
+                    <label for="newsapi_key">NewsAPI Key</label>
+                    <input type="password" id="newsapi_key" name="newsapi_key"
+                        value="{{ settings.newsapi_key if settings.newsapi_key else '' }}"
+                        placeholder="Paste your NewsAPI key here">
+                    <span class="help-text">Used only when NewsAPI coverage is enabled. The key is saved in
+                        <code>data/settings.json</code>.</span>
+                </div>
+            </div>
+
+            <!-- ===== ACTIONS ===== -->
+            <div class="panel" style="margin-top:2rem;">
+                <div class="form-actions">
+                    <button type="submit" name="action" value="save" class="btn btn-primary">
+                        💾 Save Configuration
+                    </button>
+                    <button type="submit" name="action" value="scan" class="btn btn-danger">
+                        🔍 Save &amp; Launch Scan
+                    </button>
+                    <a href="/" class="btn btn-secondary">← Cancel</a>
+                </div>
+                <p style="margin-top:1rem; font-size:0.78rem; color:var(--text-secondary);">
+                    * Required fields. "Save &amp; Launch Scan" saves settings and immediately starts a news extraction
+                    scan.
+                </p>
+            </div>
+        </form>
+    </div>
+
+    <footer class="site-footer">
+        <p>© 2025 <span>Crime Intelligence Unit</span> — Andhra Pradesh Police Department | Confidential</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

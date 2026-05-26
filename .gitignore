@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+data/generated/
+data/uploads_tmp/
+.env
+*.pdf
+test/
+__pycache__/
+*.pyc
+.env
+*.txt
